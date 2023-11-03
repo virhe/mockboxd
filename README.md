@@ -1,4 +1,4 @@
-# tsoha-project
+# mockboxd
 Course project for "Databases and Web Programming" - University of Helsinki
 
 The goal for this project is to work as a social media for movies, similar to Letterboxd.
