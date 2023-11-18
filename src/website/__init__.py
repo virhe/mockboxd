@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask
-from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
 from .views import views
 
 
@@ -37,8 +37,9 @@ def create_flask_app():
     """Creates flask app"""
 
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = "TEST" # THIS SHOULD BE CHANGED IF THE APP IS DEPLOYED!
- 
+    app.config["SECRET_KEY"] = "TEST"  # THIS SHOULD BE CHANGED IF THE APP IS DEPLOYED!
+
     app.register_blueprint(views)
+    csrf = CSRFProtect(app)
 
     return app
