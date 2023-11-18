@@ -1,9 +1,10 @@
 import sqlite3
+from flask import Flask
+from .views import views
 
 
 def create_db() -> None:
-    """Create needed database tables"""
-
+    """Creates needed database tables"""
 
     connection = sqlite3.connect("mockboxd.db")
     cursor = connection.cursor()
@@ -29,3 +30,14 @@ def create_db() -> None:
 
     connection.commit()
     connection.close()
+
+
+def create_flask_app():
+    """Creates flask app"""
+
+    app = Flask(__name__)
+    print(type(app))
+
+    app.register_blueprint(views)
+
+    return app
