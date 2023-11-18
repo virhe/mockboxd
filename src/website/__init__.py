@@ -37,9 +37,8 @@ def create_flask_app():
     """Creates flask app"""
 
     app = Flask(__name__)
-
+    app.config["SECRET_KEY"] = "TEST" # THIS SHOULD BE CHANGED IF THE APP IS DEPLOYED!
+ 
     app.register_blueprint(views)
-    login_manager = LoginManager()
-    login_manager.init_app(app)
 
     return app
