@@ -3,4 +3,19 @@
 
 {% block content %}
     <h1>Sign up</h1>
+    
+    <form method="POST" action="{{ url_for('views.signup') }}">
+        {{ form.csrf_token }}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=30) }}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=30) }}
+        </p>
+        <p>
+            {{ form.submit() }}
+        </p>
+    </form>
 {% endblock %}

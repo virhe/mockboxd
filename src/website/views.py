@@ -12,7 +12,7 @@ def index():
 # AUTH SECTION
 
 
-@views.route("/signup")
+@views.route("/signup", methods=["GET", "POST"])
 def signup():
     signup_form = SignupForm()
     if signup_form.validate_on_submit():
