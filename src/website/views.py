@@ -1,18 +1,18 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 views = Blueprint("views", __name__)
 
 
 @views.route("/")
 def index():
-    return "Hei"
+    return render_template("index.html")
 
 
-@views.route("/sign-up")
+@views.route("/signup")
 def signup():
-    return "Signup"
+    return render_template("signup.html")
 
 
 @views.route("/login")
 def login():
-    return "Login"
+    return render_template("login.html")
