@@ -1,9 +1,10 @@
 import sqlite3
 from flask import Flask
+from flask_login import LoginManager
 from .views import views
 
 
-def create_db() -> None:
+def create_db():
     """Creates needed database tables"""
 
     connection = sqlite3.connect("mockboxd.db")
@@ -36,8 +37,9 @@ def create_flask_app():
     """Creates flask app"""
 
     app = Flask(__name__)
-    print(type(app))
 
     app.register_blueprint(views)
+    login_manager = LoginManager()
+    login_manager.init_app(app)
 
     return app
