@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title|default("Mockboxd") }} - Mockboxd</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('views.index') }}">Home</a></li>
+            {% if session.logged_in %}
+                <li><a href="{{ url_for('views.profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('views.logout') }}">Log out</a></li>
+            {% else %}
+                <li><a href="{{ url_for('views.login') }}">Log in</a></li>
+                <li><a href="{{ url_for('views.signup') }}">Sign up</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>
