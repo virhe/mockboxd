@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, session, flash
+from .externals import bcrypt
 from .forms.SignupForm import SignupForm
-from .db import db
+from .externals import db
 from .models.user import User
 
 views = Blueprint("views", __name__)
@@ -22,10 +23,11 @@ def signup():
             flash("Username taken!")
             return redirect("/signup")
 
-        user = User(username=signup_form.username.data, password=signup_form.password.data)
+        hashed_password = bcrypt.generate_password_hash(signup_form.password.data)
+        user = User(username=signup_form.username.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
-        
+
         return redirect("/login")
 
     return render_template("signup.html", title="Sign Up", form=signup_form)
