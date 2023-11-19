@@ -19,7 +19,7 @@ This project aims to work as a social media for movie fans, similar to Letterbox
 
 1. Create a postgresql database with the following command:
 ```SQL
-CREATE TABLE mockboxd;
+CREATE DATABASE mockboxd;
 ```
 
 2. Clone the repository to your local device:
@@ -52,5 +52,5 @@ poetry run python src/app.py
 
 6. Access website with this url:
 ```
-localhost:5000
+127.0.0.1:5000
 ```
