@@ -5,7 +5,7 @@ from os import getenv
 from flask_bcrypt import Bcrypt
 from .externals import db, login_manager
 from .views import views
-from .models.users import User
+from .models.users import Users
 from .models.movie import Movie
 
 
@@ -30,7 +30,7 @@ def app_startup():
 
     @login_manager.user_loader
     def load_user(id):
-        return User.query.get(int(id))
+        return Users.query.get(int(id))
 
     # Create database
     db.init_app(app)
