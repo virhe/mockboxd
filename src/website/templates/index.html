@@ -3,4 +3,11 @@
 
 {% block content %}
     <h1>Index</h1>
+    <h2>All movies:</h2>
+    <p>Name - Year - Score</p>
+    <ul>
+        {% for movie in movies %}
+            <li>{{ movie.name }} - {{ movie.year }} - {{ movie.score }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}
