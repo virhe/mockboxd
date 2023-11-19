@@ -20,21 +20,29 @@ def app_startup():
     app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 
     app.register_blueprint(views)
+
+    # Enable CSRF protection in FlaskForm by default
     csrf = CSRFProtect(app)
 
+    # Initializes Bcrypt for the flask app
     # Two parameters unlike in the documentation?
     bcrypt = Bcrypt.init_app(app, app)
 
+    # Initializes LoginManager for the flask app
     login_manager.init_app(app)
-    login_manager.login_view = "views.login"
 
+    # Default view for unauthorized access
+    login_manager.login_view = "views.login" 
+
+    # Needed by flask_login
     @login_manager.user_loader
     def load_user(id):
         return Users.query.get(int(id))
 
-    # Create database
+    # Initializes SQLAlchemy for the flask app
     db.init_app(app)
 
+    # DB table creation
     with app.app_context():
         db.create_all()
 
