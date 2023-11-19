@@ -3,7 +3,7 @@ from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 from os import getenv
 from flask_bcrypt import Bcrypt
-from .externals import db
+from .externals import db, login_manager
 from .views import views
 from .models.user import User
 from .models.movie import Movie
@@ -24,6 +24,8 @@ def app_startup():
 
     # Two parameters unlike in the documentation?
     bcrypt = Bcrypt.init_app(app, app)
+
+    login_manager.init_app(app)
 
     # Create database
     db.init_app(app)
