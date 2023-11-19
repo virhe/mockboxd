@@ -6,6 +6,15 @@
     
     <form method="POST" action="{{ url_for('views.signup') }}">
         {{ form.csrf_token }}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
         <p>
             {{ form.username.label }}<br>
             {{ form.username(size=30) }}
