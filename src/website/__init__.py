@@ -26,6 +26,7 @@ def app_startup():
     bcrypt = Bcrypt.init_app(app, app)
 
     login_manager.init_app(app)
+    login_manager.login_view("views.login")
 
     # Create database
     db.init_app(app)
