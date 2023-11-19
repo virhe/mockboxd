@@ -1,4 +1,4 @@
-from ..db import db
+from ..externals import db
 
 
 class User(db.Model):

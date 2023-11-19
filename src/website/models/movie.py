@@ -1,4 +1,4 @@
-from ..db import db
+from ..externals import db
 
 
 class Movie(db.Model):
