@@ -9,7 +9,7 @@
     <nav>
         <ul>
             <li><a href="{{ url_for('views.index') }}">Home</a></li>
-            {% if session.logged_in %}
+            {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('views.profile') }}">Profile</a></li>
                 <li><a href="{{ url_for('views.logout') }}">Log out</a></li>
             {% else %}
