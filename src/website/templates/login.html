@@ -3,4 +3,28 @@
 
 {% block content %}
     <h1>Login</h1>
+
+    <form method="POST" action="{{ url_for('views.login') }}">
+        {{ form.csrf_token }}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=30) }}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size=30) }}
+        </p>
+        <p>
+            {{ form.submit() }}
+        </p>
+    </form>
 {% endblock %}
