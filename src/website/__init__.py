@@ -2,14 +2,15 @@ from flask import Flask
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 from os import getenv
-from .db import db
+from flask_bcrypt import Bcrypt
+from .externals import db
 from .views import views
 from .models.user import User
 from .models.movie import Movie
 
 
 def app_startup():
-    """Creates the flask app, as well as the database if it doesn't exist"""
+    """Creates the flask app, as well as the database tables"""
 
     load_dotenv()
 
@@ -20,6 +21,9 @@ def app_startup():
 
     app.register_blueprint(views)
     csrf = CSRFProtect(app)
+
+    # Two parameters unlike in the documentation?
+    bcrypt = Bcrypt.init_app(app, app)
 
     # Create database
     db.init_app(app)
