@@ -29,7 +29,7 @@ def signup():
         if Users.query.filter((Users.username == signup_form.username.data)).first():
             flash("Username taken!")
             return redirect("/signup")
-        
+
         hashed_password = bcrypt.generate_password_hash(
             signup_form.password.data
         ).decode("utf-8")
