@@ -3,7 +3,7 @@ from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 from os import getenv
 from flask_bcrypt import Bcrypt
-from .externals import db, login_manager
+from .externals import db, login_manager, bcrypt
 from .views import views
 from .models.users import Users
 from .models.movie import Movie
@@ -26,18 +26,18 @@ def app_startup():
 
     # Initializes Bcrypt for the flask app
     # Two parameters unlike in the documentation?
-    bcrypt = Bcrypt.init_app(app, app)
+    bcrypt_app = Bcrypt.init_app(bcrypt, app)
 
     # Initializes LoginManager for the flask app
     login_manager.init_app(app)
 
     # Default view for unauthorized access
-    login_manager.login_view = "views.login" 
+    login_manager.login_view = "views.login"
 
     # Needed by flask_login
     @login_manager.user_loader
-    def load_user(id):
-        return Users.query.get(int(id))
+    def load_user(uid):
+        return Users.query.get(int(uid))
 
     # Initializes SQLAlchemy for the flask app
     db.init_app(app)
