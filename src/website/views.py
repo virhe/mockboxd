@@ -124,7 +124,7 @@ def movie_info(movie_id):
             2,
         )
     except TypeError:
-        rating_avg = 0
+        rating_avg = "No ratings in database"
 
     if rating_form.validate_on_submit():
         old_rating = Rating.query.filter_by(
@@ -145,7 +145,7 @@ def movie_info(movie_id):
 
         return redirect(
             url_for(
-                "views.movie_info", movie_id=movie_id, title=movie.name.capitalize()
+                "views.movie_info", movie_id=movie_id, title=movie.name
             )
         )
 
@@ -162,7 +162,7 @@ def movie_info(movie_id):
 
         return redirect(
             url_for(
-                "views.movie_info", movie_id=movie_id, title=movie.name.capitalize()
+                "views.movie_info", movie_id=movie_id, title=movie.name
             )
         )
 
@@ -173,7 +173,7 @@ def movie_info(movie_id):
         comments=comments,
         rating_form=rating_form,
         comment_form=comment_form,
-        title=movie.name.capitalize(),
+        title=movie.name,
     )
 
 
@@ -196,7 +196,7 @@ def add_movie():
 
     add_movie_form = AddMovieForm()
     if add_movie_form.validate_on_submit():
-        movie = Movie(name=add_movie_form.name.data, year=add_movie_form.year.data)
+        movie = Movie(name=add_movie_form.name.data.capitalize(), year=add_movie_form.year.data)
         db.session.add(movie)
         db.session.commit()
         flash(f"{add_movie_form.name.data} added to the database.")
