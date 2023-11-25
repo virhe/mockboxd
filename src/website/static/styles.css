@@ -1,0 +1,15 @@
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+}
+
+.navbar > li {
+    margin-right: 15px;
+}
