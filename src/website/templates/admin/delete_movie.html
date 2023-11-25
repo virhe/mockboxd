@@ -1,0 +1,32 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Delete movie</h1>
+    <form method="POST">
+        {{ search_movie_form.csrf_token }}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <p>
+            {{ search_movie_form.name.label }}<br>
+            {{ search_movie_form.name(size=30) }}
+        </p>
+        <p>
+            {{ search_movie_form.submit() }}
+        </p>
+    </form>
+
+    <ul>
+        {% for movie in movies %}
+            <li><a href="{{ url_for("views.delete_movie", movie_id=movie.id) }}"> {{ movie.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
