@@ -6,11 +6,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title|default("Mockboxd") }} - Mockboxd</title>
+    <link rel="stylesheet" href="{{ url_for("static", filename="styles.css") }}">
 </head>
 <body>
     <!-- Sitewide navbar -->
-    <nav>
-        <ul>
+    <header>
+        <h1>Mockboxd</h1>
+        <ul class="navbar">
             <li><a href="{{ url_for('views.index') }}">Home</a></li>
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('views.profile') }}">Profile</a></li>
@@ -23,7 +25,7 @@
                 <li><a href="{{ url_for('views.admin') }}">Admin panel</a></li>
             {% endif %}
         </ul>
-    </nav>
+    </header>
     
     {% block content %}
     {% endblock %}
