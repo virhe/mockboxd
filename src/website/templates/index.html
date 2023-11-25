@@ -4,7 +4,6 @@
 {% block content %}
     <h1>Index</h1>
     <h2>Top 10:</h2>
-    <p>Name - Year - Score</p>
     <ul>
         {% for movie in top %}
             <li><a href="{{ url_for("views.movie_info", movie_id=movie.id) }}"> {{ movie.name }}</a></li>
@@ -12,7 +11,6 @@
     </ul>
 
     <h2>Recently added:</h2>
-    <p>Name - Year - Score</p>
     <ul>
         {% for movie in recent %}
             <li><a href="{{ url_for("views.movie_info", movie_id=movie.id) }}"> {{ movie.name }}</a></li>
