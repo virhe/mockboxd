@@ -143,7 +143,11 @@ def movie_info(movie_id):
 
         db.session.commit()
 
-        return redirect(url_for("views.movie_info", movie_id=movie_id))
+        return redirect(
+            url_for(
+                "views.movie_info", movie_id=movie_id, title=movie.name.capitalize()
+            )
+        )
 
     # COMMENTING SECTION
 
@@ -156,7 +160,11 @@ def movie_info(movie_id):
         db.session.add(comment)
         db.session.commit()
 
-        return redirect(url_for("views.movie_info", movie_id=movie_id))
+        return redirect(
+            url_for(
+                "views.movie_info", movie_id=movie_id, title=movie.name.capitalize()
+            )
+        )
 
     return render_template(
         "movie_info.html",
@@ -165,6 +173,7 @@ def movie_info(movie_id):
         comments=comments,
         rating_form=rating_form,
         comment_form=comment_form,
+        title=movie.name.capitalize(),
     )
 
 
@@ -176,7 +185,7 @@ def admin():
     if not current_user.admin:
         abort(403)
 
-    return render_template("admin/admin_panel.html")
+    return render_template("admin/admin_panel.html", title="Admin Panel")
 
 
 @views.route("/admin/add-movie", methods=["GET", "POST"])
@@ -193,7 +202,9 @@ def add_movie():
         flash(f"{add_movie_form.name.data} added to the database.")
         return redirect(url_for("views.add_movie"))
 
-    return render_template("admin/add_movie.html", form=add_movie_form)
+    return render_template(
+        "admin/add_movie.html", form=add_movie_form, title="Add Movie"
+    )
 
 
 @views.route("/admin/search-movies", methods=["GET", "POST"])
@@ -211,7 +222,10 @@ def search_movie():
         ).all()
 
     return render_template(
-        "admin/search_movie.html", form=search_movie_form, movies=matching_names
+        "admin/search_movie.html",
+        form=search_movie_form,
+        movies=matching_names,
+        title="Delete Movie",
     )
 
 
