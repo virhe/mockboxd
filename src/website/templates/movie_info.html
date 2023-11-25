@@ -3,22 +3,38 @@
 
 {% block content %}
     <h1>{{ movie.name }}</h1>
+    <h2>Rating</h2>
+        {{ rating }}
+    {% if current_user.is_authenticated %}
+        <form method="POST">
+            {{ rating_form.csrf_token }}
+            <p>
+                {% for rating in rating_form.rating %}
+                    {{ rating }} {{ rating.label }}
+                {% endfor %}
+            </p>
+            <p>
+                {{ rating_form.submit() }}
+            </p>
+        </form>
+
+        <form method="POST">
+            {{ comment_form.csrf_token }}
+            <p>
+                {{ comment_form.comment.label }}<br>
+                {{ comment_form.comment(size=70) }}
+            </p>
+            <p>
+                {{ comment_form.submit() }}
+            </p>
+        </form>
+    {% endif %}
+
     <h2>Comments</h2>
     <ul>
         {% for comment in comments %}
             <li> {{ comment.comment }} </li>
         {% endfor %}
     </ul>
-    {% if current_user.is_authenticated %}
-        <form method="POST">
-            {{ form.csrf_token }}
-            <p>
-                {{ form.comment.label }}<br>
-                {{ form.comment(size=40) }}
-            </p>
-            <p>
-                {{ form.submit() }}
-            </p>
-        </form>
-    {% endif %}
+
 {% endblock %}
