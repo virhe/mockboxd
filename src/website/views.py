@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, flash, url_for
+from flask import Blueprint, render_template, redirect, flash, url_for, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.sql import func
 
@@ -105,7 +105,7 @@ def profile():
 @views.route("/movie/<int:movie_id>", methods=["GET", "POST"])
 def movie_info(movie_id):
     """Handles logic related to each movie's info page"""
-    movie = Movie.query.get(movie_id)
+    movie = Movie.query.get_or_404(movie_id)
     comments = Comment.query.filter_by(movie_id=movie_id).all()
 
     rating_form = RatingForm()
@@ -164,6 +164,16 @@ def movie_info(movie_id):
         rating_form=rating_form,
         comment_form=comment_form,
     )
+
+
+# ADMIN SECTION
+@views.route("/admin")
+def admin():
+    """Handles logic related to admin control panel"""
+    if not current_user.admin:
+        abort(403)
+
+    return render_template("admin_panel.html")
 
 
 # TEST SECTION
