@@ -3,4 +3,22 @@
 
 {% block content %}
     <h1>{{ movie.name }}</h1>
+    <h2>Comments</h2>
+    <ul>
+        {% for comment in comments %}
+            <li> {{ comment.comment }} </li>
+        {% endfor %}
+    </ul>
+    {% if current_user.is_authenticated %}
+        <form method="POST">
+            {{ form.csrf_token }}
+            <p>
+                {{ form.comment.label }}<br>
+                {{ form.comment(size=40) }}
+            </p>
+            <p>
+                {{ form.submit() }}
+            </p>
+        </form>
+    {% endif %}
 {% endblock %}
