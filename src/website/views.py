@@ -7,6 +7,7 @@ from .externals import db
 from .forms.comment_form import CommentForm
 from .forms.login_form import LoginForm
 from .forms.signup_form import SignupForm
+from .forms.rating_form import RatingForm
 from .models.comment import Comment
 from .models.movie import Movie
 from .models.rating import Rating
@@ -25,7 +26,7 @@ def index():
         top_rated = (
             Movie.query.join(Rating)
             .group_by(Movie.id)
-            .order_by(func.avg(Rating.rating))
+            .order_by(func.avg(Rating.rating).desc())
             .limit(10)
             .all()
         )
@@ -103,10 +104,46 @@ def profile():
 
 @views.route("/movie/<int:movie_id>", methods=["GET", "POST"])
 def movie_info(movie_id):
+    """Handles logic related to each movie's info page"""
     movie = Movie.query.get(movie_id)
     comments = Comment.query.filter_by(movie_id=movie_id).all()
 
+    rating_form = RatingForm()
     comment_form = CommentForm()
+
+    # RATING SECTION
+
+    # Calculates average rating for the movie rounded to two decimal places
+    try:
+        rating_avg = round(
+            db.session.query(func.avg(Rating.rating))
+            .filter(Rating.movie_id == movie_id)
+            .scalar(),
+            2,
+        )
+    except TypeError:
+        rating_avg = 0
+
+    if rating_form.validate_on_submit():
+        old_rating = Rating.query.filter_by(
+            user_id=current_user.id, movie_id=movie_id
+        ).first()
+        if old_rating:
+            # Changes old review instead of making a new one
+            old_rating.rating = rating_form.rating.data
+        else:
+            rating = Rating(
+                user_id=current_user.id,
+                movie_id=movie_id,
+                rating=rating_form.rating.data,
+            )
+            db.session.add(rating)
+
+        db.session.commit()
+
+        return redirect(url_for("views.movie_info", movie_id=movie_id))
+
+    # COMMENTING SECTION
 
     if comment_form.validate_on_submit():
         comment = Comment(
@@ -120,7 +157,12 @@ def movie_info(movie_id):
         return redirect(url_for("views.movie_info", movie_id=movie_id))
 
     return render_template(
-        "movie_info.html", movie=movie, comments=comments, form=comment_form
+        "movie_info.html",
+        movie=movie,
+        rating=rating_avg,
+        comments=comments,
+        rating_form=rating_form,
+        comment_form=comment_form,
     )
 
 
