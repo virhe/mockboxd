@@ -22,9 +22,6 @@
             {% if current_user.admin %}
                 <li><a href="{{ url_for('views.admin') }}">Admin panel</a></li>
             {% endif %}
-            <li><a href="{{ url_for('views.create_movies') }}">Create example movies [FOR TESTING]</a></li>
-            <li><a href="{{ url_for('views.delete_movies') }}">Delete example movies [FOR TESTING]</a></li>
-
         </ul>
     </nav>
     
