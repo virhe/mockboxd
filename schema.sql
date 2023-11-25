@@ -1,7 +1,8 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(30) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    admin BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE movie (
@@ -24,3 +25,5 @@ CREATE TABLE comment (
     movie_id INTEGER REFERENCES movie(id),
     comment TEXT NOT NULL
 );
+
+INSERT INTO users (username, password, admin) VALUES ('admin', '$2b$12$blid7Gw50K3ohaHWTcICIuD2G6KJy9HQBRjXKEjcwznvJsIOgTjbi', TRUE);
