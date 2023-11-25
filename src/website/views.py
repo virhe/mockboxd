@@ -1,16 +1,16 @@
-import datetime
-
-from flask import Blueprint, render_template, redirect, session, flash
+from flask import Blueprint, render_template, redirect, flash, url_for
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.sql import func
+
 from .externals import bcrypt
-from .forms.signup_form import SignupForm
-from .forms.login_form import LoginForm
 from .externals import db
-from .models.users import Users
-from .models.movie import Movie
+from .forms.comment_form import CommentForm
+from .forms.login_form import LoginForm
+from .forms.signup_form import SignupForm
 from .models.comment import Comment
+from .models.movie import Movie
 from .models.rating import Rating
+from .models.users import Users
 
 views = Blueprint("views", __name__)
 
@@ -58,7 +58,7 @@ def signup():
         db.session.add(user)
         db.session.commit()
 
-        return redirect("/login")
+        return redirect(url_for("views.login"))
 
     return render_template("signup.html", title="Sign Up", form=signup_form)
 
@@ -75,11 +75,11 @@ def login():
             user.password, login_form.password.data
         ):
             flash("Wrong username or password.")
-            return redirect("/login")
+            return redirect(url_for("views.login"))
 
         login_user(user)
 
-        return redirect("/profile")
+        return redirect(url_for("views.profile"))
 
     return render_template("login.html", title="Log In", form=login_form)
 
@@ -88,7 +88,7 @@ def login():
 def logout():
     """Handles logic related to logging users out"""
     logout_user()
-    return redirect("/")
+    return redirect(url_for("views.index"))
 
 
 # MAIN SECTION
@@ -101,10 +101,27 @@ def profile():
     return render_template("profile.html", title="Profile")
 
 
-@views.route("/movie/<int:movie_id>")
+@views.route("/movie/<int:movie_id>", methods=["GET", "POST"])
 def movie_info(movie_id):
     movie = Movie.query.get(movie_id)
-    return render_template("movie_info.html", movie=movie)
+    comments = Comment.query.filter_by(movie_id=movie_id).all()
+
+    comment_form = CommentForm()
+
+    if comment_form.validate_on_submit():
+        comment = Comment(
+            user_id=current_user.id,
+            movie_id=movie_id,
+            comment=comment_form.comment.data,
+        )
+        db.session.add(comment)
+        db.session.commit()
+
+        return redirect(url_for("views.movie_info", movie_id=movie_id))
+
+    return render_template(
+        "movie_info.html", movie=movie, comments=comments, form=comment_form
+    )
 
 
 # TEST SECTION
@@ -125,7 +142,7 @@ def create_movies():
     # db.session.add(rating)
     db.session.commit()
 
-    return redirect("/")
+    return redirect(url_for("views.index"))
 
 
 @views.route("/delete_movies")
@@ -138,4 +155,4 @@ def delete_movies():
         db.session.delete(movie)
     db.session.commit()
 
-    return redirect("/")
+    return redirect(url_for("views.index"))
