@@ -1,0 +1,10 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Admin panel</h1>
+    {% if current_user.admin %}
+        <li><a href="{{ url_for('views.add_movie') }}">Add movie</a></li>
+        <li><a href="{{ url_for('views.search_movie') }}">Delete movies</a></li>
+    {% endif %}
+{% endblock %}
