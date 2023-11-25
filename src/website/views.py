@@ -8,6 +8,8 @@ from .forms.comment_form import CommentForm
 from .forms.login_form import LoginForm
 from .forms.signup_form import SignupForm
 from .forms.rating_form import RatingForm
+from .forms.add_movie_form import AddMovieForm
+from .forms.search_movie_form import SearchMovieForm
 from .models.comment import Comment
 from .models.movie import Movie
 from .models.rating import Rating
@@ -168,43 +170,62 @@ def movie_info(movie_id):
 
 # ADMIN SECTION
 @views.route("/admin")
+@login_required
 def admin():
     """Handles logic related to admin control panel"""
     if not current_user.admin:
         abort(403)
 
-    return render_template("admin_panel.html")
+    return render_template("admin/admin_panel.html")
 
 
-# TEST SECTION
+@views.route("/admin/add-movie", methods=["GET", "POST"])
+@login_required
+def add_movie():
+    if not current_user.admin:
+        abort(403)
+
+    add_movie_form = AddMovieForm()
+    if add_movie_form.validate_on_submit():
+        movie = Movie(name=add_movie_form.name.data, year=add_movie_form.year.data)
+        db.session.add(movie)
+        db.session.commit()
+        flash(f"{add_movie_form.name.data} added to the database.")
+        return redirect(url_for("views.add_movie"))
+
+    return render_template("admin/add_movie.html", form=add_movie_form)
 
 
-@views.route("/create_movies")
-def create_movies():
-    """Temporary view for creating example movies"""
-    test1 = Movie(name="Test1", year=1962)
-    test2 = Movie(name="Test2", year=1999)
-    test3 = Movie(name="Test3", year=2012)
+@views.route("/admin/search-movies", methods=["GET", "POST"])
+@login_required
+def search_movie():
+    if not current_user.admin:
+        abort(403)
 
-    rating = Rating(user_id=1, movie_id=4, rating=8)
+    search_movie_form = SearchMovieForm()
+    matching_names = []
 
-    db.session.add(test1)
-    db.session.add(test2)
-    db.session.add(test3)
-    # db.session.add(rating)
+    if search_movie_form.validate_on_submit():
+        matching_names = Movie.query.filter(
+            Movie.name.ilike(f"%{search_movie_form.name.data}%")
+        ).all()
+
+    return render_template(
+        "admin/search_movie.html", form=search_movie_form, movies=matching_names
+    )
+
+
+@views.route("/admin/delete-movie/<int:movie_id>", methods=["GET", "POST"])
+@login_required
+def delete_movie(movie_id):
+    if not current_user.admin:
+        abort(403)
+
+    movie = Movie.query.get_or_404(movie_id)
+    Rating.query.filter_by(movie_id=movie.id).delete()
+    Comment.query.filter_by(movie_id=movie.id).delete()
+    db.session.delete(movie)
     db.session.commit()
 
-    return redirect(url_for("views.index"))
-
-
-@views.route("/delete_movies")
-def delete_movies():
-    """Temporary view for deleting example movies"""
-    movies = Movie.query.all()
-    for movie in movies:
-        Rating.query.filter_by(movie_id=movie.id).delete()
-        Comment.query.filter_by(movie_id=movie.id).delete()
-        db.session.delete(movie)
-    db.session.commit()
-
-    return redirect(url_for("views.index"))
+    flash(f"{movie.name} deleted from the database.")
+    return redirect(url_for("views.search_movie"))
