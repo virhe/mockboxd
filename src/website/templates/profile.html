@@ -2,5 +2,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ current_user.username }}</h1>
+    <h1>{{ user.username }}</h1>
+    <h2>Watchlist</h2>
+
+    <ul>
+        {% for movie, rating in watchlist %}
+            <li><a href="{{ url_for("views.movie_info", movie_id=movie.id) }}"> {{ movie.name }}</a></li>
+            - User rating: {{ rating }}
+        {% else %}
+            <li>Watchlist is empty.</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

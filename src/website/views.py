@@ -14,9 +14,10 @@ from .models.comment import Comment
 from .models.movie import Movie
 from .models.rating import Rating
 from .models.users import Users
+from .models.watchlist import Watchlist
+
 
 views = Blueprint("views", __name__)
-
 
 @views.route("/")
 def index():
@@ -97,11 +98,21 @@ def logout():
 # MAIN SECTION
 
 
-@views.route("/profile")
+@views.route("/profile/", defaults={"user_id": None})
+@views.route("/profile/<int:user_id>")
 @login_required
-def profile():
+def profile(user_id):
     """Handles logic related to the user's profile page"""
-    return render_template("profile.html", title="Profile")
+    if user_id is None:
+        user_id = current_user.id
+        return redirect(url_for("views.profile", user_id=user_id))
+
+    user = Users.query.get_or_404(user_id)
+
+    # This query is ChatGPT generated
+    watchlist = db.session.query(Movie, Rating.rating).outerjoin(Rating, (Rating.movie_id == Movie.id) & (Rating.user_id == user_id)).join(Watchlist, (Watchlist.movie_id == Movie.id) & (Watchlist.user_id == user_id)).all()
+
+    return render_template("profile.html", title="Profile", user=user, watchlist=watchlist)
 
 
 @views.route("/movie/<int:movie_id>", methods=["GET", "POST"])
@@ -144,6 +155,12 @@ def movie_info(movie_id):
                 rating=rating_form.rating.data,
             )
             db.session.add(rating)
+
+            # Add to watchlist if it's not already on the list
+            if not Watchlist.query.filter_by(user_id=current_user.id, movie_id=movie_id).first():
+                entry = Watchlist(user_id=current_user.id, movie_id=movie_id)
+                db.session.add(entry)
+
 
         db.session.commit()
 
