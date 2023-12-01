@@ -144,9 +144,7 @@ def movie_info(movie_id):
         db.session.commit()
 
         return redirect(
-            url_for(
-                "views.movie_info", movie_id=movie_id, title=movie.name
-            )
+            url_for("views.movie_info", movie_id=movie_id, title=movie.name)
         )
 
     # COMMENTING SECTION
@@ -161,9 +159,7 @@ def movie_info(movie_id):
         db.session.commit()
 
         return redirect(
-            url_for(
-                "views.movie_info", movie_id=movie_id, title=movie.name
-            )
+            url_for("views.movie_info", movie_id=movie_id, title=movie.name)
         )
 
     return render_template(
@@ -196,7 +192,9 @@ def add_movie():
 
     add_movie_form = AddMovieForm()
     if add_movie_form.validate_on_submit():
-        movie = Movie(name=add_movie_form.name.data.capitalize(), year=add_movie_form.year.data)
+        movie = Movie(
+            name=add_movie_form.name.data.capitalize(), year=add_movie_form.year.data
+        )
         db.session.add(movie)
         db.session.commit()
         flash(f"{add_movie_form.name.data} added to the database.")
