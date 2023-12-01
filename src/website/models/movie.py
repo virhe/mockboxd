@@ -1,8 +1,14 @@
+"""Module implements movie class for ORM"""
+
 from sqlalchemy import func
 from ..externals import db
 
 
 class Movie(db.Model):
+    """Represents a movie"""
+
+    # pylint: disable=not-callable
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     year = db.Column(db.Integer)

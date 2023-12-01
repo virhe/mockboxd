@@ -1,8 +1,11 @@
-from sqlalchemy import func
+"""Module implements follower class for ORM"""
+
 from ..externals import db
 
 
 class Follower(db.Model):
+    """Represents the follower relationship between two users"""
+
     id = db.Column(db.Integer, primary_key=True)
     follower_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     followed_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)

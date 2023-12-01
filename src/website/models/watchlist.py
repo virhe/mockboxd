@@ -1,8 +1,14 @@
+"""Module implements watchlist class for ORM"""
+
 from sqlalchemy import func
 from ..externals import db
 
 
 class Watchlist(db.Model):
+    """Represents a user watchlist"""
+
+    # pylint: disable=not-callable
+
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey("movie.id"), nullable=False)

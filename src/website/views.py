@@ -1,3 +1,5 @@
+"""This module handles all of the application views and their logic"""
+
 from flask import Blueprint, render_template, redirect, flash, url_for, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy.sql import func
@@ -219,6 +221,7 @@ def admin():
 @views.route("/admin/add-movie", methods=["GET", "POST"])
 @login_required
 def add_movie():
+    """Handles logic related to adding a movie to the database"""
     if not current_user.admin:
         abort(403)
 
@@ -240,6 +243,7 @@ def add_movie():
 @views.route("/admin/search-movies", methods=["GET", "POST"])
 @login_required
 def search_movie():
+    """Handles logic related to searching for a movie by name"""
     if not current_user.admin:
         abort(403)
 
@@ -262,6 +266,7 @@ def search_movie():
 @views.route("/admin/delete-movie/<int:movie_id>", methods=["GET", "POST"])
 @login_required
 def delete_movie(movie_id):
+    """Handles logic related to deleting a movie from the database"""
     if not current_user.admin:
         abort(403)
 

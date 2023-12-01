@@ -1,7 +1,9 @@
+"""This module is responsible for creating the flask app and the database tables"""
+
+from os import getenv
 from flask import Flask
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
-from os import getenv
 from flask_bcrypt import Bcrypt
 from .externals import db, login_manager, bcrypt
 from .views import views
@@ -22,11 +24,11 @@ def app_startup():
     app.register_blueprint(views)
 
     # Enable CSRF protection in FlaskForm by default
-    csrf = CSRFProtect(app)
+    CSRFProtect(app)
 
     # Initializes Bcrypt for the flask app
     # Two parameters unlike in the documentation?
-    bcrypt_app = Bcrypt.init_app(bcrypt, app)
+    Bcrypt.init_app(bcrypt, app)
 
     # Initializes LoginManager for the flask app
     login_manager.init_app(app)

@@ -1,3 +1,5 @@
+"""This module is responsible for starting the app"""
+
 from website import app_startup
 
 # Create DB and start flask app when running the file

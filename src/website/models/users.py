@@ -1,9 +1,14 @@
+"""Module implements users class for ORM"""
+
 from flask_login import UserMixin
+from .follower import Follower
 from ..externals import db
 
 
 # Class name in plural due to user being reserved
 class Users(UserMixin, db.Model):
+    """Represents a user"""
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
