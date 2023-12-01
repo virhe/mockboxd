@@ -28,4 +28,11 @@ CREATE TABLE comment (
     date_added TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE watchlist (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    movie_id INTEGER REFERENCES movie(id),
+    date_added TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+)
+
 INSERT INTO users (username, password, admin) VALUES ('admin', '$2b$12$blid7Gw50K3ohaHWTcICIuD2G6KJy9HQBRjXKEjcwznvJsIOgTjbi', TRUE);

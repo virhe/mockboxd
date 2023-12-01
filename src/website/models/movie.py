@@ -9,6 +9,7 @@ class Movie(db.Model):
     date_added = db.Column(db.DateTime(timezone=True), server_default=func.now())
     ratings = db.relationship("Rating", back_populates="movie")
     comments = db.relationship("Comment", back_populates="movie")
+    seen_by = db.relationship("Watchlist", back_populates="movie")
 
     def __repr__(self):
         return f"<Movie {self.name}"
