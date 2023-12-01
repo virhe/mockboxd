@@ -19,6 +19,7 @@ from .models.watchlist import Watchlist
 
 views = Blueprint("views", __name__)
 
+
 @views.route("/")
 def index():
     """Handles logic related to the index/home page"""
@@ -110,9 +111,18 @@ def profile(user_id):
     user = Users.query.get_or_404(user_id)
 
     # This query is ChatGPT generated
-    watchlist = db.session.query(Movie, Rating.rating).outerjoin(Rating, (Rating.movie_id == Movie.id) & (Rating.user_id == user_id)).join(Watchlist, (Watchlist.movie_id == Movie.id) & (Watchlist.user_id == user_id)).all()
+    watchlist = (
+        db.session.query(Movie, Rating.rating)
+        .outerjoin(Rating, (Rating.movie_id == Movie.id) & (Rating.user_id == user_id))
+        .join(
+            Watchlist, (Watchlist.movie_id == Movie.id) & (Watchlist.user_id == user_id)
+        )
+        .all()
+    )
 
-    return render_template("profile.html", title="Profile", user=user, watchlist=watchlist)
+    return render_template(
+        "profile.html", title="Profile", user=user, watchlist=watchlist
+    )
 
 
 @views.route("/movie/<int:movie_id>", methods=["GET", "POST"])
@@ -157,10 +167,11 @@ def movie_info(movie_id):
             db.session.add(rating)
 
             # Add to watchlist if it's not already on the list
-            if not Watchlist.query.filter_by(user_id=current_user.id, movie_id=movie_id).first():
+            if not Watchlist.query.filter_by(
+                user_id=current_user.id, movie_id=movie_id
+            ).first():
                 entry = Watchlist(user_id=current_user.id, movie_id=movie_id)
                 db.session.add(entry)
-
 
         db.session.commit()
 
