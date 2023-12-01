@@ -108,7 +108,11 @@ def profile():
 def movie_info(movie_id):
     """Handles logic related to each movie's info page"""
     movie = Movie.query.get_or_404(movie_id)
-    comments = Comment.query.filter_by(movie_id=movie_id).all()
+    comments = (
+        Comment.query.filter_by(movie_id=movie_id)
+        .order_by(Comment.date_added.desc())
+        .all()
+    )
 
     rating_form = RatingForm()
     comment_form = CommentForm()
