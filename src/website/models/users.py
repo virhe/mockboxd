@@ -8,6 +8,7 @@ class Users(UserMixin, db.Model):
     username = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     admin = db.Column(db.Boolean, default=False, nullable=False)
+    watchlist = db.relationship('Watchlist', back_populates='user')
 
     def __repr__(self):
         return f"<User {self.username}>"
