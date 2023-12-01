@@ -34,6 +34,7 @@
     <ul>
         {% for comment in comments %}
             <li> {{ comment.comment }} </li>
+            <small>Posted on: {{ comment.date_added.strftime("%d-%m-%Y %H:%M") }}</small>
         {% endfor %}
     </ul>
 
