@@ -16,7 +16,7 @@ CREATE TABLE rating (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
     movie_id INTEGER REFERENCES movie(id),
-    rating INTEGER NOT NULL
+    rating INTEGER NOT NULL,
     date_added TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -24,7 +24,7 @@ CREATE TABLE comment (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
     movie_id INTEGER REFERENCES movie(id),
-    comment TEXT NOT NULL
+    comment TEXT NOT NULL,
     date_added TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -33,6 +33,6 @@ CREATE TABLE watchlist (
     user_id INTEGER REFERENCES users(id),
     movie_id INTEGER REFERENCES movie(id),
     date_added TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 INSERT INTO users (username, password, admin) VALUES ('admin', '$2b$12$blid7Gw50K3ohaHWTcICIuD2G6KJy9HQBRjXKEjcwznvJsIOgTjbi', TRUE);
