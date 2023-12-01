@@ -35,4 +35,10 @@ CREATE TABLE watchlist (
     date_added TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE follower (
+    id SERIAL PRIMARY KEY,
+    follower_id INTEGER REFERENCES users(id) NOT NULL,
+    followed_id INTEGER REFERENCES movie(id) NOT NULL
+);
+
 INSERT INTO users (username, password, admin) VALUES ('admin', '$2b$12$blid7Gw50K3ohaHWTcICIuD2G6KJy9HQBRjXKEjcwznvJsIOgTjbi', TRUE);
