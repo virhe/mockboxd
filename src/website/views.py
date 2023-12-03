@@ -70,11 +70,11 @@ def movies():
     )
 
 
-@views.route("/users")
-def users():
-    """Handles logic related to listing all users"""
-    all_users = Users.query.all()
-    return render_template("users.html", users=all_users, title="Users")
+# @views.route("/users")
+# def users():
+#     """Handles logic related to listing all users"""
+#     all_users = Users.query.all()
+#     return render_template("users.html", users=all_users, title="Users")
 
 
 @views.route("/profile/", defaults={"user_id": None})
