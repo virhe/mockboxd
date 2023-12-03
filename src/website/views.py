@@ -49,61 +49,31 @@ def index():
     )
 
 
-# AUTH SECTION
-
-
-@views.route("/signup", methods=["GET", "POST"])
-def signup():
-    """Handles logic related to signing users up"""
-    signup_form = SignupForm()
-    if signup_form.validate_on_submit():
-        # Check if username already exists
-        if Users.query.filter((Users.username == signup_form.username.data)).first():
-            flash("Username taken!")
-            return redirect("/signup")
-
-        hashed_password = bcrypt.generate_password_hash(
-            signup_form.password.data
-        ).decode("utf-8")
-        # Add user to DB
-        user = Users(username=signup_form.username.data, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
-
-        return redirect(url_for("views.login"))
-
-    return render_template("signup.html", title="Sign Up", form=signup_form)
-
-
-@views.route("/login", methods=["GET", "POST"])
-def login():
-    """Handles logic related to logging users in"""
-    login_form = LoginForm()
-    if login_form.validate_on_submit():
-        user = Users.query.filter((Users.username == login_form.username.data)).first()
-
-        # Check for wrong login information
-        if not user or not bcrypt.check_password_hash(
-            user.password, login_form.password.data
-        ):
-            flash("Wrong username or password.")
-            return redirect(url_for("views.login"))
-
-        login_user(user)
-
-        return redirect(url_for("views.profile"))
-
-    return render_template("login.html", title="Log In", form=login_form)
-
-
-@views.route("/logout")
-def logout():
-    """Handles logic related to logging users out"""
-    logout_user()
-    return redirect(url_for("views.index"))
-
-
 # MAIN SECTION
+
+
+@views.route("/movies", methods=["GET", "POST"])
+def movies():
+    """Handles logic related to listing all movies"""
+    movies = Movie.query.all()
+
+    form = SearchMovieForm()
+
+    if form.validate_on_submit():
+        movies = Movie.query.filter(Movie.name.ilike(f"%{form.name.data}%")).all()
+
+    return render_template(
+        "movies.html",
+        form=form,
+        movies=movies,
+        title="Movies",
+    )
+
+
+@views.route("/users")
+def users():
+    users = Users.query.all()
+    return render_template("users.html", users=users, title="Users")
 
 
 @views.route("/profile/", defaults={"user_id": None})
@@ -275,7 +245,63 @@ def movie_info(movie_id):
     )
 
 
+# AUTH SECTION
+
+
+@views.route("/signup", methods=["GET", "POST"])
+def signup():
+    """Handles logic related to signing users up"""
+    signup_form = SignupForm()
+    if signup_form.validate_on_submit():
+        # Check if username already exists
+        if Users.query.filter((Users.username == signup_form.username.data)).first():
+            flash("Username taken!")
+            return redirect("/signup")
+
+        hashed_password = bcrypt.generate_password_hash(
+            signup_form.password.data
+        ).decode("utf-8")
+        # Add user to DB
+        user = Users(username=signup_form.username.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+
+        return redirect(url_for("views.login"))
+
+    return render_template("signup.html", title="Sign Up", form=signup_form)
+
+
+@views.route("/login", methods=["GET", "POST"])
+def login():
+    """Handles logic related to logging users in"""
+    login_form = LoginForm()
+    if login_form.validate_on_submit():
+        user = Users.query.filter((Users.username == login_form.username.data)).first()
+
+        # Check for wrong login information
+        if not user or not bcrypt.check_password_hash(
+            user.password, login_form.password.data
+        ):
+            flash("Wrong username or password.")
+            return redirect(url_for("views.login"))
+
+        login_user(user)
+
+        return redirect(url_for("views.profile"))
+
+    return render_template("login.html", title="Log In", form=login_form)
+
+
+@views.route("/logout")
+def logout():
+    """Handles logic related to logging users out"""
+    logout_user()
+    return redirect(url_for("views.index"))
+
+
 # ADMIN SECTION
+
+
 @views.route("/admin")
 @login_required
 def admin():
@@ -342,6 +368,7 @@ def delete_movie(movie_id):
         abort(403)
 
     movie = Movie.query.get_or_404(movie_id)
+    Watchlist.query.filter_by(movie_id=movie_id).delete()
     Rating.query.filter_by(movie_id=movie.id).delete()
     Comment.query.filter_by(movie_id=movie.id).delete()
     db.session.delete(movie)
