@@ -13,3 +13,11 @@ header {
 .navbar > li {
     margin-right: 15px;
 }
+
+.info, .comments {
+    width: 600px;
+}
+
+.info, .comments * {
+    word-wrap: break-word;
+}
