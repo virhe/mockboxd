@@ -296,7 +296,10 @@ def add_movie():
     add_movie_form = AddMovieForm()
     if add_movie_form.validate_on_submit():
         movie = Movie(
-            name=add_movie_form.name.data.capitalize(), year=add_movie_form.year.data
+            name=add_movie_form.name.data.capitalize(),
+            year=add_movie_form.year.data,
+            description=add_movie_form.description.data,
+            genre=add_movie_form.genre.data,
         )
         db.session.add(movie)
         db.session.commit()
