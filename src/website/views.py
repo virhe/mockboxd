@@ -6,17 +6,21 @@ from sqlalchemy.sql import func
 
 from .externals import bcrypt
 from .externals import db
+
 from .forms.comment_form import CommentForm
 from .forms.login_form import LoginForm
 from .forms.signup_form import SignupForm
 from .forms.rating_form import RatingForm
 from .forms.add_movie_form import AddMovieForm
 from .forms.search_movie_form import SearchMovieForm
+from .forms.follow_form import FollowForm
+
 from .models.comment import Comment
 from .models.movie import Movie
 from .models.rating import Rating
 from .models.users import Users
 from .models.watchlist import Watchlist
+from .models.follower import Follower
 
 
 views = Blueprint("views", __name__)
@@ -103,7 +107,6 @@ def logout():
 
 @views.route("/profile/", defaults={"user_id": None})
 @views.route("/profile/<int:user_id>")
-@login_required
 def profile(user_id):
     """Handles logic related to the user's profile page"""
     if user_id is None:
@@ -111,6 +114,16 @@ def profile(user_id):
         return redirect(url_for("views.profile", user_id=user_id))
 
     user = Users.query.get_or_404(user_id)
+    follow_form = FollowForm() if current_user.is_authenticated else None
+
+    # Check if current_user is already following the other user
+    already_following = (
+        Follower.query.filter_by(
+            follower_id=current_user.id, followed_id=user_id
+        ).first()
+        if current_user.is_authenticated
+        else None
+    )
 
     # This query is ChatGPT generated
     watchlist = (
@@ -123,8 +136,32 @@ def profile(user_id):
     )
 
     return render_template(
-        "profile.html", title="Profile", user=user, watchlist=watchlist
+        "profile.html",
+        title="Profile",
+        user=user,
+        watchlist=watchlist,
+        follow_form=follow_form,
+        following=already_following,
     )
+
+
+@views.route("/follow/<int:user_id>", methods=["GET", "POST"])
+def follow_user(user_id):
+    """Handles logic related to following a user"""
+    if user_id == current_user.id:
+        return redirect(url_for("views.profile", user_id=user_id))
+
+    # Check if current_user is already following the other user
+    if Follower.query.filter_by(
+        follower_id=current_user.id, followed_id=user_id
+    ).first():
+        return redirect(url_for("views.profile", user_id=user_id))
+
+    follow = Follower(follower_id=current_user.id, followed_id=user_id)
+    db.session.add(follow)
+    db.session.commit()
+
+    return redirect(url_for("views.profile", user_id=user_id))
 
 
 @views.route("/movie/<int:movie_id>", methods=["GET", "POST"])
