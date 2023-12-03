@@ -14,6 +14,7 @@
         <h1>Mockboxd</h1>
         <ul class="navbar">
             <li><a href="{{ url_for("views.index") }}">Home</a></li>
+            <li><a href="{{ url_for("views.movies") }}">Movies</a></li>
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for("views.profile") }}">Profile</a></li>
                 {% if current_user.admin %}
