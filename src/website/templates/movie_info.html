@@ -2,12 +2,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ movie.name }}</h1>
-    <h2>Rating</h2>
-        {{ rating }}
+    <div class="info">
+        <h1>{{ movie.name }}</h1>
+        <p><b>Description:</b> {{ movie.description }}</p>
+        <p><b>Year:</b> {{ movie.year }}</p>
+        <p><b>Genre:</b> {{ movie.genre }}</p>
+        <p><b>Rating (avg):</b> {{ rating }}</p>
+    </div>
+        <hr>
     {% if current_user.is_authenticated %}
         <form method="POST">
             {{ rating_form.csrf_token }}
+            <p>Add rating:</p>
             <p>
                 {% for rating in rating_form.rating %}
                     {{ rating }} {{ rating.label }}
@@ -29,13 +35,15 @@
             </p>
         </form>
     {% endif %}
-
-    <h2>Comments</h2>
-    <ul>
-        {% for comment, user in comments %}
-            <li><a href="{{ url_for("views.profile", user_id=user.id) }}"> {{ user.username }}</a>: {{ comment.comment }} </li>
-            <small>Posted on: {{ comment.date_added.strftime("%d-%m-%Y %H:%M") }}</small>
-        {% endfor %}
-    </ul>
+    
+    <div class="comments">
+        <h2>Comments</h2>
+        <ul>
+            {% for comment, user in comments %}
+                <li><a href="{{ url_for("views.profile", user_id=user.id) }}"> {{ user.username }}</a>: {{ comment.comment }} </li>
+                <small>Posted on: {{ comment.date_added.strftime("%d-%m-%Y %H:%M") }}</small>
+            {% endfor %}
+        </ul>
+    </div>
 
 {% endblock %}
