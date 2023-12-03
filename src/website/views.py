@@ -30,7 +30,7 @@ views = Blueprint("views", __name__)
 @views.route("/")
 def index():
     """Handles logic related to the index/home page"""
-    recently_added = Movie.query.order_by(Movie.date_added).limit(10).all()
+    recently_added = Movie.query.order_by(Movie.date_added.desc()).limit(10).all()
 
     # If no movies have reviews, show recently added instead
     if Rating.query.first() is not None:
