@@ -17,6 +17,7 @@ This project aims to work as a social media for movie fans, similar to Letterbox
 - Info pages contain the movie's name, description, year, genre, average rating, as well as user comments.
 - Usernames are clickable in the comments and bring the current user to the user's profile page.
 - Profile pages contain the user's watchlist (movies the user has rated).
+- Users can follow and unfollow each other
 - Admin account login with username "admin" and password "admin"
 - The admin account has access to an admin panel with the ability to add and delete movies.
 
