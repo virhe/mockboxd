@@ -14,6 +14,7 @@ from .forms.rating_form import RatingForm
 from .forms.add_movie_form import AddMovieForm
 from .forms.search_movie_form import SearchMovieForm
 from .forms.follow_form import FollowForm
+from .forms.unfollow_form import UnfollowForm
 
 from .models.comment import Comment
 from .models.movie import Movie
@@ -115,6 +116,7 @@ def profile(user_id):
 
     user = Users.query.get_or_404(user_id)
     follow_form = FollowForm() if current_user.is_authenticated else None
+    unfollow_form = UnfollowForm() if current_user.is_authenticated else None
 
     # Check if current_user is already following the other user
     already_following = (
@@ -141,6 +143,7 @@ def profile(user_id):
         user=user,
         watchlist=watchlist,
         follow_form=follow_form,
+        unfollow_form=unfollow_form,
         following=already_following,
     )
 
@@ -148,6 +151,9 @@ def profile(user_id):
 @views.route("/follow/<int:user_id>", methods=["GET", "POST"])
 def follow_user(user_id):
     """Handles logic related to following a user"""
+    if not current_user.is_authenticated:
+        return redirect(url_for("views.index"))
+
     if user_id == current_user.id:
         return redirect(url_for("views.profile", user_id=user_id))
 
@@ -159,6 +165,29 @@ def follow_user(user_id):
 
     follow = Follower(follower_id=current_user.id, followed_id=user_id)
     db.session.add(follow)
+    db.session.commit()
+
+    return redirect(url_for("views.profile", user_id=user_id))
+
+
+@views.route("/unfollow/<int:user_id>", methods=["GET", "POST"])
+def unfollow_user(user_id):
+    """Handles logic related to unfollowing a user"""
+    if not current_user.is_authenticated:
+        return redirect(url_for("views.index"))
+
+    if user_id == current_user.id:
+        return redirect(url_for("views.profile", user_id=user_id))
+
+    follow = Follower.query.filter_by(
+        follower_id=current_user.id, followed_id=user_id
+    ).first()
+
+    # If current_user isn't following the user, return to profile page
+    if not follow:
+        return redirect(url_for("views.profile", user_id=user_id))
+
+    db.session.delete(follow)
     db.session.commit()
 
     return redirect(url_for("views.profile", user_id=user_id))
