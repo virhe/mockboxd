@@ -32,8 +32,8 @@
 
     <h2>Comments</h2>
     <ul>
-        {% for comment in comments %}
-            <li> {{ comment.comment }} </li>
+        {% for comment, user in comments %}
+            <li><a href="{{ url_for("views.profile", user_id=user.id) }}"> {{ user.username }}</a>: {{ comment.comment }} </li>
             <small>Posted on: {{ comment.date_added.strftime("%d-%m-%Y %H:%M") }}</small>
         {% endfor %}
     </ul>
