@@ -198,7 +198,9 @@ def movie_info(movie_id):
     """Handles logic related to each movie's info page"""
     movie = Movie.query.get_or_404(movie_id)
     comments = (
-        Comment.query.filter_by(movie_id=movie_id)
+        db.session.query(Comment, Users)
+        .join(Users, Comment.user_id == Users.id)
+        .filter(Comment.movie_id == movie.id)
         .order_by(Comment.date_added.desc())
         .all()
     )
