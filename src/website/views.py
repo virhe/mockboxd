@@ -55,25 +55,26 @@ def index():
 @views.route("/movies", methods=["GET", "POST"])
 def movies():
     """Handles logic related to listing all movies"""
-    movies = Movie.query.all()
+    all_movies = Movie.query.all()
 
     form = SearchMovieForm()
 
     if form.validate_on_submit():
-        movies = Movie.query.filter(Movie.name.ilike(f"%{form.name.data}%")).all()
+        all_movies = Movie.query.filter(Movie.name.ilike(f"%{form.name.data}%")).all()
 
     return render_template(
         "movies.html",
         form=form,
-        movies=movies,
+        movies=all_movies,
         title="Movies",
     )
 
 
 @views.route("/users")
 def users():
-    users = Users.query.all()
-    return render_template("users.html", users=users, title="Users")
+    """Handles logic related to listing all users"""
+    all_users = Users.query.all()
+    return render_template("users.html", users=all_users, title="Users")
 
 
 @views.route("/profile/", defaults={"user_id": None})
