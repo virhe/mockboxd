@@ -65,3 +65,9 @@ poetry run python src/app.py
 ```
 127.0.0.1:5000
 ```
+
+8. Admin panel can be accessed with
+username
+```admin```
+password
+```admin```
