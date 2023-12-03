@@ -3,6 +3,26 @@
 
 {% block content %}
     <h1>{{ user.username }}</h1>
+
+    {% if not following and current_user.id != user.id and current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for("views.follow_user", user_id=user.id) }}">
+            {{ follow_form.csrf_token }}
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+            <p>
+                {{ follow_form.submit() }}
+            </p>
+        </form>
+    {% endif %}
+
     <h2>Watchlist</h2>
 
     <ul>
