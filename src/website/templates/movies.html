@@ -1,0 +1,30 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>All movies:</h2>
+    <form method="POST">
+        {{ form.csrf_token }}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=30) }}
+        </p>
+        <p>
+            {{ form.submit() }}
+        </p>
+    </form>
+    <ul>
+        {% for movie in movies %}
+            <li><a href="{{ url_for("views.movie_info", movie_id=movie.id) }}"> {{ movie.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
