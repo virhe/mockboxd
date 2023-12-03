@@ -9,6 +9,8 @@ CREATE TABLE movie (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     year INTEGER,
+    description TEXT NOT NULL,
+    genre VARCHAR(255) NOT NULL,
     date_added TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
