@@ -16,11 +16,19 @@
         {% endwith %}
         <p>
             {{ form.name.label }}<br>
-            {{ form.name(size=30) }}
+            {{ form.name(size=20) }}
         </p>
         <p>
             {{ form.year.label }}<br>
             {{ form.year(size=4) }}
+        </p>
+        <p>
+            {{ form.description.label }}<br>
+            {{ form.description(size=80) }}
+        </p>
+        <p>
+            {{ form.genre.label }}<br>
+            {{ form.genre }}
         </p>
         <p>
             {{ form.submit() }}
