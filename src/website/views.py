@@ -2,6 +2,7 @@
 
 from flask import Blueprint, render_template, redirect, flash, url_for, abort
 from flask_login import login_user, logout_user, login_required, current_user
+from sqlalchemy import text
 from sqlalchemy.sql import func
 
 from .externals import bcrypt
@@ -30,19 +31,24 @@ views = Blueprint("views", __name__)
 @views.route("/")
 def index():
     """Handles logic related to the index/home page"""
-    recently_added = Movie.query.order_by(Movie.date_added.desc()).limit(10).all()
+    recently_added = db.session.execute(
+        text("SELECT * FROM movie ORDER BY date_added DESC LIMIT 10")
+    )
 
-    # If no movies have reviews, show recently added instead
-    if Rating.query.first() is not None:
-        top_rated = (
-            Movie.query.join(Rating)
-            .group_by(Movie.id)
-            .order_by(func.avg(Rating.rating).desc())
-            .limit(10)
-            .all()
-        )
-    else:
-        top_rated = recently_added
+    sql = text(
+        """
+        SELECT movie.id,
+                movie.name,
+                AVG(rating.rating) as average_ratings
+        FROM movie
+        JOIN rating ON movie.id = rating.movie_id
+        GROUP BY movie.id, movie.name
+        ORDER BY average_ratings DESC
+        LIMIT 10
+    """
+    )
+
+    top_rated = db.session.execute(sql).fetchall()
 
     return render_template(
         "index.html", title="Home", top=top_rated, recent=recently_added
