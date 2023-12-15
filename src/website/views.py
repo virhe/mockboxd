@@ -33,7 +33,7 @@ def index():
     """Handles logic related to the index/home page"""
     recently_added = db.session.execute(
         text("SELECT * FROM movie ORDER BY date_added DESC LIMIT 10")
-    )
+    ).fetchall()
 
     sql = text(
         """
@@ -66,7 +66,8 @@ def movies():
     form = SearchMovieForm()
 
     if form.validate_on_submit():
-        all_movies = Movie.query.filter(Movie.name.ilike(f"%{form.name.data}%")).all()
+        sql = text("SELECT * FROM movie WHERE name ILIKE :search")
+        all_movies = db.session.execute(sql, {"search": f"%{form.name.data}%"}).fetchall()
 
     return render_template(
         "movies.html",
