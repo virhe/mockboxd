@@ -97,13 +97,11 @@ def profile(user_id):
     unfollow_form = UnfollowForm() if current_user.is_authenticated else None
 
     # Check if current_user is already following the other user
-    already_following = (
-        Follower.query.filter_by(
-            follower_id=current_user.id, followed_id=user_id
-        ).first()
-        if current_user.is_authenticated
-        else None
-    )
+    if current_user.is_authenticated:
+        sql = text("SELECT * FROM follower WHERE follower_id = :follower_id AND followed_id = :followed_id")
+        already_following = db.session.execute(sql, {"follower_id": current_user.id, "followed_id": user_id}).first()
+    else:
+        already_following = None
 
     # This query is ChatGPT generated
     watchlist = (
