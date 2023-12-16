@@ -101,7 +101,6 @@ INSERT INTO rating (user_id, movie_id, rating) VALUES (3, 6, 5);
 
 INSERT INTO watchlist (user_id, movie_id) VALUES(3, 1);
 INSERT INTO watchlist (user_id, movie_id) VALUES(3, 2);
-INSERT INTO watchlist (user_id, movie_id) VALUES(3, 3);
 INSERT INTO watchlist (user_id, movie_id) VALUES(3, 6);
 
 INSERT INTO comment (user_id, movie_id, comment) VALUES (3, 1, 'It was fine.');
