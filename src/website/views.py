@@ -433,9 +433,8 @@ def search_movie():
     matching_names = []
 
     if search_movie_form.validate_on_submit():
-        matching_names = Movie.query.filter(
-            Movie.name.ilike(f"%{search_movie_form.name.data}%")
-        ).all()
+        sql = text("SELECT * FROM movie WHERE name ILIKE :name")
+        matching_names = db.session.execute(sql, {"name": f"%{search_movie_form.name.data}%"}).fetchall()
 
     return render_template(
         "admin/search_movie.html",
