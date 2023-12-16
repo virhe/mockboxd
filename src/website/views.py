@@ -521,6 +521,7 @@ def delete_users(user_id):
 
     # Delete from follower
     db.session.execute(text("DELETE FROM follower WHERE follower_id = :user_id"), {"user_id": user_id})
+    db.session.execute(text("DELETE FROM follower WHERE followed_id = :user_id"), {"user_id": user_id})
 
     # Delete from users
     db.session.execute(text("DELETE FROM users WHERE id = :user_id"), {"user_id": user_id})
