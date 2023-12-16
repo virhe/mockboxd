@@ -282,12 +282,14 @@ def movie_info(movie_id):
                     "SELECT * FROM watchlist WHERE user_id = :user_id AND movie_id = :movie_id"
                 ),
                 {"user_id": current_user.id, "movie_id": movie_id},
-            )
+            ).fetchone()
 
             # Add to watchlist if it's not already on the list
             if not on_watchlist:
                 db.session.execute(
-                    "INSERT INTO watchlist (user_id, movie_id) VALUES (:user_id, :movie_id)",
+                    text(
+                        "INSERT INTO watchlist (user_id, movie_id) VALUES (:user_id, :movie_id)"
+                    ),
                     {"user_id": current_user.id, "movie_id": movie_id},
                 )
 
