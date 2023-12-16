@@ -154,10 +154,14 @@ def follow_user(user_id):
         return redirect(url_for("views.profile", user_id=user_id))
 
     # Check if current_user is already following the other user
-    if Follower.query.filter_by(
-            follower_id=current_user.id, followed_id=user_id
-    ).first():
-        return redirect(url_for("views.profile", user_id=user_id))
+    if current_user.is_authenticated:
+        sql = text(
+            "SELECT * FROM follower WHERE follower_id = :follower_id AND followed_id = :followed_id"
+        )
+        if db.session.execute(
+            sql, {"follower_id": current_user.id, "followed_id": user_id}
+        ).first():
+            return redirect(url_for("views.profile", user_id=user_id))
 
     follow = Follower(follower_id=current_user.id, followed_id=user_id)
     db.session.add(follow)
