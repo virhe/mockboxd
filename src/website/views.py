@@ -326,7 +326,11 @@ def signup():
     signup_form = SignupForm()
     if signup_form.validate_on_submit():
         # Check if username already exists
-        if Users.query.filter((Users.username == signup_form.username.data)).first():
+        username_taken = db.session.execute(
+            text("SELECT * FROM users WHERE username = :username"),
+            {"username": signup_form.username.data},
+        ).fetchone()
+        if username_taken:
             flash("Username taken!")
             return redirect("/signup")
 
@@ -334,8 +338,10 @@ def signup():
             signup_form.password.data
         ).decode("utf-8")
         # Add user to DB
-        user = Users(username=signup_form.username.data, password=hashed_password)
-        db.session.add(user)
+        db.session.execute(
+            text("INSERT INTO users (username, password) VALUES (:username, :password)"),
+            {"username": signup_form.username.data, "password": hashed_password},
+        )
         db.session.commit()
 
         return redirect(url_for("views.login"))
