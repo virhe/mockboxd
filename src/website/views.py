@@ -290,12 +290,16 @@ def movie_info(movie_id):
     # COMMENTING SECTION
 
     if comment_form.validate_on_submit():
-        comment = Comment(
-            user_id=current_user.id,
-            movie_id=movie_id,
-            comment=comment_form.comment.data,
+        db.session.execute(
+            text(
+                "INSERT INTO comment (user_id, movie_id, comment) VALUES (:user_id, :movie_id, :comment)"
+            ),
+            {
+                "user_id": current_user.id,
+                "movie_id": movie_id,
+                "comment": comment_form.comment.data,
+            },
         )
-        db.session.add(comment)
         db.session.commit()
 
         return redirect(
