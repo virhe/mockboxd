@@ -1,4 +1,4 @@
-"""This module handles all of the application views and their logic"""
+"""This module handles all the application views and their logic"""
 
 from flask import Blueprint, render_template, redirect, flash, url_for, abort
 from flask_login import login_user, logout_user, login_required, current_user
@@ -14,6 +14,7 @@ from .forms.signup_form import SignupForm
 from .forms.rating_form import RatingForm
 from .forms.add_movie_form import AddMovieForm
 from .forms.search_movie_form import SearchMovieForm
+from .forms.search_user_form import SearchUserForm
 from .forms.follow_form import FollowForm
 from .forms.unfollow_form import UnfollowForm
 
@@ -23,7 +24,6 @@ from .models.rating import Rating
 from .models.users import Users
 from .models.watchlist import Watchlist
 from .models.follower import Follower
-
 
 views = Blueprint("views", __name__)
 
@@ -67,7 +67,9 @@ def movies():
 
     if form.validate_on_submit():
         sql = text("SELECT * FROM movie WHERE name ILIKE :search")
-        all_movies = db.session.execute(sql, {"search": f"%{form.name.data}%"}).fetchall()
+        all_movies = db.session.execute(
+            sql, {"search": f"%{form.name.data}%"}
+        ).fetchall()
 
     return render_template(
         "movies.html",
@@ -77,11 +79,25 @@ def movies():
     )
 
 
-# @views.route("/users")
-# def users():
-#     """Handles logic related to listing all users"""
-#     all_users = Users.query.all()
-#     return render_template("users.html", users=all_users, title="Users")
+@views.route("/users", methods=["GET", "POST"])
+def users():
+    """Handles logic related to listing all users"""
+    all_users = Users.query.all()
+
+    form = SearchUserForm()
+
+    if form.validate_on_submit():
+        sql = text("SELECT * FROM users WHERE username ILIKE :search")
+        all_users = db.session.execute(
+            sql, {"search": f"%{form.name.data}%"}
+        ).fetchall()
+
+    return render_template(
+        "users.html",
+        form=form,
+        users=all_users,
+        title="Users",
+    )
 
 
 @views.route("/profile/", defaults={"user_id": None})
@@ -98,8 +114,12 @@ def profile(user_id):
 
     # Check if current_user is already following the other user
     if current_user.is_authenticated:
-        sql = text("SELECT * FROM follower WHERE follower_id = :follower_id AND followed_id = :followed_id")
-        already_following = db.session.execute(sql, {"follower_id": current_user.id, "followed_id": user_id}).first()
+        sql = text(
+            "SELECT * FROM follower WHERE follower_id = :follower_id AND followed_id = :followed_id"
+        )
+        already_following = db.session.execute(
+            sql, {"follower_id": current_user.id, "followed_id": user_id}
+        ).first()
     else:
         already_following = None
 
@@ -135,7 +155,7 @@ def follow_user(user_id):
 
     # Check if current_user is already following the other user
     if Follower.query.filter_by(
-        follower_id=current_user.id, followed_id=user_id
+            follower_id=current_user.id, followed_id=user_id
     ).first():
         return redirect(url_for("views.profile", user_id=user_id))
 
@@ -214,7 +234,7 @@ def movie_info(movie_id):
 
             # Add to watchlist if it's not already on the list
             if not Watchlist.query.filter_by(
-                user_id=current_user.id, movie_id=movie_id
+                    user_id=current_user.id, movie_id=movie_id
             ).first():
                 entry = Watchlist(user_id=current_user.id, movie_id=movie_id)
                 db.session.add(entry)
@@ -286,7 +306,7 @@ def login():
 
         # Check for wrong login information
         if not user or not bcrypt.check_password_hash(
-            user.password, login_form.password.data
+                user.password, login_form.password.data
         ):
             flash("Wrong username or password.")
             return redirect(url_for("views.login"))
