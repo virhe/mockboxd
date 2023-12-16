@@ -17,6 +17,7 @@ from .forms.search_movie_form import SearchMovieForm
 from .forms.search_user_form import SearchUserForm
 from .forms.follow_form import FollowForm
 from .forms.unfollow_form import UnfollowForm
+from .models import follower
 
 from .models.comment import Comment
 from .models.movie import Movie
@@ -179,16 +180,20 @@ def unfollow_user(user_id):
     if user_id == current_user.id:
         return redirect(url_for("views.profile", user_id=user_id))
 
-    follow = Follower.query.filter_by(
-        follower_id=current_user.id, followed_id=user_id
-    ).first()
+    sql = text(
+        "SELECT * FROM follower WHERE follower_id = :follower_id AND followed_id = :followed_id"
+    )
 
-    # If current_user isn't following the user, return to profile page
-    if not follow:
-        return redirect(url_for("views.profile", user_id=user_id))
-
-    db.session.delete(follow)
-    db.session.commit()
+    if db.session.execute(
+        sql, {"follower_id": current_user.id, "followed_id": user_id}
+    ).first():
+        db.session.execute(
+            text(
+                "DELETE FROM follower WHERE follower_id = :follower_id AND followed_id = :followed_id"
+            ),
+            {"follower_id": current_user.id, "followed_id": user_id},
+        )
+        db.session.commit()
 
     return redirect(url_for("views.profile", user_id=user_id))
 
@@ -238,7 +243,7 @@ def movie_info(movie_id):
 
             # Add to watchlist if it's not already on the list
             if not Watchlist.query.filter_by(
-                    user_id=current_user.id, movie_id=movie_id
+                user_id=current_user.id, movie_id=movie_id
             ).first():
                 entry = Watchlist(user_id=current_user.id, movie_id=movie_id)
                 db.session.add(entry)
@@ -310,7 +315,7 @@ def login():
 
         # Check for wrong login information
         if not user or not bcrypt.check_password_hash(
-                user.password, login_form.password.data
+            user.password, login_form.password.data
         ):
             flash("Wrong username or password.")
             return redirect(url_for("views.login"))
