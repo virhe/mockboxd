@@ -17,7 +17,6 @@ from .forms.search_movie_form import SearchMovieForm
 from .forms.search_user_form import SearchUserForm
 from .forms.follow_form import FollowForm
 from .forms.unfollow_form import UnfollowForm
-from .models import follower
 
 from .models.comment import Comment
 from .models.movie import Movie
@@ -160,7 +159,7 @@ def follow_user(user_id):
             "SELECT * FROM follower WHERE follower_id = :follower_id AND followed_id = :followed_id"
         )
         if db.session.execute(
-            sql, {"follower_id": current_user.id, "followed_id": user_id}
+                sql, {"follower_id": current_user.id, "followed_id": user_id}
         ).first():
             return redirect(url_for("views.profile", user_id=user_id))
 
@@ -189,7 +188,7 @@ def unfollow_user(user_id):
     )
 
     if db.session.execute(
-        sql, {"follower_id": current_user.id, "followed_id": user_id}
+            sql, {"follower_id": current_user.id, "followed_id": user_id}
     ).first():
         db.session.execute(
             text(
@@ -361,7 +360,7 @@ def login():
 
         # Check for wrong login information
         if not user or not bcrypt.check_password_hash(
-            user.password, login_form.password.data
+                user.password, login_form.password.data
         ):
             flash("Wrong username or password.")
             return redirect(url_for("views.login"))
@@ -470,3 +469,56 @@ def delete_movie(movie_id):
 
     flash(f"{movie_name} deleted from the database.")
     return redirect(url_for("views.search_movie"))
+
+
+@views.route("/admin/search-users", methods=["GET", "POST"])
+@login_required
+def search_users():
+    """Handles logic related to searching for a user by name"""
+    if not current_user.admin:
+        abort(403)
+
+    search_user_form = SearchUserForm()
+    matching_names = db.session.execute(text("SELECT * FROM users")).fetchall()
+
+    if search_user_form.validate_on_submit():
+        sql = text("SELECT * FROM users WHERE username ILIKE :name AND username != 'admin'")
+        matching_names = db.session.execute(sql, {"name": f"%{search_user_form.name.data}%"}).fetchall()
+
+    return render_template(
+        "admin/search_users.html",
+        form=search_user_form,
+        users=matching_names,
+        title="Delete User",
+    )
+
+
+@views.route("/admin/delete-users/<int:user_id>", methods=["GET", "POST"])
+@login_required
+def delete_users(user_id):
+    """Handles logic related to deleting a user from the database"""
+    if not current_user.admin:
+        abort(403)
+
+    user = Users.query.get_or_404(user_id)
+    username = user.username
+
+    # Delete from watchlist
+    db.session.execute(text("DELETE FROM watchlist WHERE user_id = :user_id"), {"user_id": user_id})
+
+    # Delete from rating
+    db.session.execute(text("DELETE FROM rating WHERE user_id = :user_id"), {"user_id": user_id})
+
+    # Delete from comment
+    db.session.execute(text("DELETE FROM comment WHERE user_id = :user_id"), {"user_id": user_id})
+
+    # Delete from follower
+    db.session.execute(text("DELETE FROM follower WHERE follower_id = :user_id"), {"user_id": user_id})
+
+    # Delete from users
+    db.session.execute(text("DELETE FROM users WHERE id = :user_id"), {"user_id": user_id})
+
+    db.session.commit()
+
+    flash(f"{username} deleted from the database.")
+    return redirect(url_for("views.search_users"))

@@ -6,5 +6,6 @@
     {% if current_user.admin %}
         <li><a href="{{ url_for('views.add_movie') }}">Add movie</a></li>
         <li><a href="{{ url_for('views.search_movie') }}">Delete movies</a></li>
+        <li><a href="{{ url_for('views.search_users') }}">Delete users</a></li>
     {% endif %}
 {% endblock %}
