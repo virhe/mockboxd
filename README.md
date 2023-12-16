@@ -1,12 +1,18 @@
 # mockboxd
 ## Course project for "Databases and Web Programming" - University of Helsinki
 
+> [!NOTE]
+> This course requires the use of raw SQL. Most of the features were originally designed using ORM methods, and later converted to use "session.execute(text())". This is not how I would approach this project otherwise.
+
 This project aims to work as a social media for movie fans, similar to Letterboxd.
 - Users will be able to add, remove, or edit reviews for movies and see other people's reviews.
 - Users will be able to see information about movies.
 - Users will be able follow other users.
-- Users will be able to see a feed of activities from accounts they follow.
-- An admin account can add or remove movies and moderate users and their activities (removing accounts, comments, etc.).
+- An admin account can add or remove movies and moderate users
+
+> [!TIP]  
+> Admin account username = "admin", password = "admin".
+> (The same password applies to other sample users).
 
 ## Current state
 
@@ -16,16 +22,13 @@ This project aims to work as a social media for movie fans, similar to Letterbox
 - Movie names are clickable and bring the user to the movie's info page.
 - Info pages contain the movie's name, description, year, genre, average rating, as well as user comments.
 - Usernames are clickable in the comments and bring the current user to the user's profile page.
-- Profile pages contain the user's watchlist (movies the user has rated).
+- Profile pages contain the user's watchlist (movies the user has rated), as well as follower and following counts.
 - Users can follow and unfollow each other
 - Admin account login with username "admin" and password "admin"
-- The admin account has access to an admin panel with the ability to add and delete movies.
+- The admin account has access to an admin panel with the ability to add and delete movies, as well as delete users.
 
 ## TODO
 
-- Page with list of users
-- Feed of activities from followed accounts
-- Admin removal of accounts and comments
 - UI improvements
 
 ## Usage
