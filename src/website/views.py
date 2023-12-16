@@ -206,13 +206,15 @@ def unfollow_user(user_id):
 def movie_info(movie_id):
     """Handles logic related to each movie's info page"""
     movie = Movie.query.get_or_404(movie_id)
-    comments = (
-        db.session.query(Comment, Users)
-        .join(Users, Comment.user_id == Users.id)
-        .filter(Comment.movie_id == movie.id)
-        .order_by(Comment.date_added.desc())
-        .all()
-    )
+    sql = text("""
+    SELECT comment.*, users.username, users.id
+    FROM comment
+    JOIN users ON comment.user_id = users.id
+    WHERE comment.movie_id = :movie_id
+    ORDER BY comment.date_added DESC
+    """)
+
+    comments = db.session.execute(sql, {"movie_id": movie_id}).fetchall()
 
     rating_form = RatingForm()
     comment_form = CommentForm()
