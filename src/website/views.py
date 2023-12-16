@@ -430,7 +430,7 @@ def search_movie():
         abort(403)
 
     search_movie_form = SearchMovieForm()
-    matching_names = []
+    matching_names = db.session.execute(text("SELECT * FROM movie")).fetchall()
 
     if search_movie_form.validate_on_submit():
         sql = text("SELECT * FROM movie WHERE name ILIKE :name")
@@ -452,11 +452,21 @@ def delete_movie(movie_id):
         abort(403)
 
     movie = Movie.query.get_or_404(movie_id)
-    Watchlist.query.filter_by(movie_id=movie_id).delete()
-    Rating.query.filter_by(movie_id=movie.id).delete()
-    Comment.query.filter_by(movie_id=movie.id).delete()
-    db.session.delete(movie)
+    movie_name = movie.name
+
+    # Delete from watchlist
+    db.session.execute(text("DELETE FROM watchlist WHERE movie_id = :movie_id"), {"movie_id": movie_id})
+
+    # Delete from rating
+    db.session.execute(text("DELETE FROM rating WHERE movie_id = :movie_id"), {"movie_id": movie_id})
+
+    # Delete from comment
+    db.session.execute(text("DELETE FROM comment WHERE movie_id = :movie_id"), {"movie_id": movie_id})
+
+    # Delete from movie
+    db.session.execute(text("DELETE FROM movie WHERE id = :movie_id"), {"movie_id": movie_id})
+
     db.session.commit()
 
-    flash(f"{movie.name} deleted from the database.")
+    flash(f"{movie_name} deleted from the database.")
     return redirect(url_for("views.search_movie"))
