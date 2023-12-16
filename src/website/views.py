@@ -482,7 +482,7 @@ def search_users():
     matching_names = db.session.execute(text("SELECT * FROM users")).fetchall()
 
     if search_user_form.validate_on_submit():
-        sql = text("SELECT * FROM users WHERE username ILIKE :name AND username != 'admin'")
+        sql = text("SELECT * FROM users WHERE username ILIKE :name")
         matching_names = db.session.execute(sql, {"name": f"%{search_user_form.name.data}%"}).fetchall()
 
     return render_template(
