@@ -133,8 +133,14 @@ def profile(user_id):
         .all()
     )
 
-    follower_count = db.session.execute(text("SELECT count(*) FROM follower WHERE followed_id = :user_id"), {"user_id": user_id}).scalar()
-    following_count = db.session.execute(text("SELECT count(*) FROM follower WHERE follower_id = :user_id"), {"user_id": user_id}).scalar()
+    follower_count = db.session.execute(
+        text("SELECT count(*) FROM follower WHERE followed_id = :user_id"),
+        {"user_id": user_id},
+    ).scalar()
+    following_count = db.session.execute(
+        text("SELECT count(*) FROM follower WHERE follower_id = :user_id"),
+        {"user_id": user_id},
+    ).scalar()
 
     return render_template(
         "profile.html",
@@ -145,10 +151,8 @@ def profile(user_id):
         unfollow_form=unfollow_form,
         following=already_following,
         follower_count=follower_count,
-        following_count=following_count
+        following_count=following_count,
     )
-
-
 
 
 @views.route("/follow/<int:user_id>", methods=["GET", "POST"])
@@ -166,7 +170,7 @@ def follow_user(user_id):
             "SELECT * FROM follower WHERE follower_id = :follower_id AND followed_id = :followed_id"
         )
         if db.session.execute(
-                sql, {"follower_id": current_user.id, "followed_id": user_id}
+            sql, {"follower_id": current_user.id, "followed_id": user_id}
         ).first():
             return redirect(url_for("views.profile", user_id=user_id))
 
@@ -195,7 +199,7 @@ def unfollow_user(user_id):
     )
 
     if db.session.execute(
-            sql, {"follower_id": current_user.id, "followed_id": user_id}
+        sql, {"follower_id": current_user.id, "followed_id": user_id}
     ).first():
         db.session.execute(
             text(
@@ -367,7 +371,7 @@ def login():
 
         # Check for wrong login information
         if not user or not bcrypt.check_password_hash(
-                user.password, login_form.password.data
+            user.password, login_form.password.data
         ):
             flash("Wrong username or password.")
             return redirect(url_for("views.login"))
@@ -440,7 +444,9 @@ def search_movie():
 
     if search_movie_form.validate_on_submit():
         sql = text("SELECT * FROM movie WHERE name ILIKE :name")
-        matching_names = db.session.execute(sql, {"name": f"%{search_movie_form.name.data}%"}).fetchall()
+        matching_names = db.session.execute(
+            sql, {"name": f"%{search_movie_form.name.data}%"}
+        ).fetchall()
 
     return render_template(
         "admin/search_movie.html",
@@ -461,16 +467,24 @@ def delete_movie(movie_id):
     movie_name = movie.name
 
     # Delete from watchlist
-    db.session.execute(text("DELETE FROM watchlist WHERE movie_id = :movie_id"), {"movie_id": movie_id})
+    db.session.execute(
+        text("DELETE FROM watchlist WHERE movie_id = :movie_id"), {"movie_id": movie_id}
+    )
 
     # Delete from rating
-    db.session.execute(text("DELETE FROM rating WHERE movie_id = :movie_id"), {"movie_id": movie_id})
+    db.session.execute(
+        text("DELETE FROM rating WHERE movie_id = :movie_id"), {"movie_id": movie_id}
+    )
 
     # Delete from comment
-    db.session.execute(text("DELETE FROM comment WHERE movie_id = :movie_id"), {"movie_id": movie_id})
+    db.session.execute(
+        text("DELETE FROM comment WHERE movie_id = :movie_id"), {"movie_id": movie_id}
+    )
 
     # Delete from movie
-    db.session.execute(text("DELETE FROM movie WHERE id = :movie_id"), {"movie_id": movie_id})
+    db.session.execute(
+        text("DELETE FROM movie WHERE id = :movie_id"), {"movie_id": movie_id}
+    )
 
     db.session.commit()
 
@@ -490,7 +504,9 @@ def search_users():
 
     if search_user_form.validate_on_submit():
         sql = text("SELECT * FROM users WHERE username ILIKE :name")
-        matching_names = db.session.execute(sql, {"name": f"%{search_user_form.name.data}%"}).fetchall()
+        matching_names = db.session.execute(
+            sql, {"name": f"%{search_user_form.name.data}%"}
+        ).fetchall()
 
     return render_template(
         "admin/search_users.html",
@@ -511,20 +527,32 @@ def delete_users(user_id):
     username = user.username
 
     # Delete from watchlist
-    db.session.execute(text("DELETE FROM watchlist WHERE user_id = :user_id"), {"user_id": user_id})
+    db.session.execute(
+        text("DELETE FROM watchlist WHERE user_id = :user_id"), {"user_id": user_id}
+    )
 
     # Delete from rating
-    db.session.execute(text("DELETE FROM rating WHERE user_id = :user_id"), {"user_id": user_id})
+    db.session.execute(
+        text("DELETE FROM rating WHERE user_id = :user_id"), {"user_id": user_id}
+    )
 
     # Delete from comment
-    db.session.execute(text("DELETE FROM comment WHERE user_id = :user_id"), {"user_id": user_id})
+    db.session.execute(
+        text("DELETE FROM comment WHERE user_id = :user_id"), {"user_id": user_id}
+    )
 
     # Delete from follower
-    db.session.execute(text("DELETE FROM follower WHERE follower_id = :user_id"), {"user_id": user_id})
-    db.session.execute(text("DELETE FROM follower WHERE followed_id = :user_id"), {"user_id": user_id})
+    db.session.execute(
+        text("DELETE FROM follower WHERE follower_id = :user_id"), {"user_id": user_id}
+    )
+    db.session.execute(
+        text("DELETE FROM follower WHERE followed_id = :user_id"), {"user_id": user_id}
+    )
 
     # Delete from users
-    db.session.execute(text("DELETE FROM users WHERE id = :user_id"), {"user_id": user_id})
+    db.session.execute(
+        text("DELETE FROM users WHERE id = :user_id"), {"user_id": user_id}
+    )
 
     db.session.commit()
 
