@@ -164,8 +164,12 @@ def follow_user(user_id):
         ).first():
             return redirect(url_for("views.profile", user_id=user_id))
 
-    follow = Follower(follower_id=current_user.id, followed_id=user_id)
-    db.session.add(follow)
+    db.session.execute(
+        text(
+            "INSERT INTO follower (follower_id, followed_id) VALUES (:follower_id, :followed_id)"
+        ),
+        {"follower_id": current_user.id, "followed_id": user_id},
+    )
     db.session.commit()
 
     return redirect(url_for("views.profile", user_id=user_id))
