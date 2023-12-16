@@ -236,26 +236,50 @@ def movie_info(movie_id):
         rating_avg = "No ratings in database"
 
     if rating_form.validate_on_submit():
-        old_rating = Rating.query.filter_by(
-            user_id=current_user.id, movie_id=movie_id
-        ).first()
+        old_rating = db.session.execute(
+            text(
+                "SELECT * FROM rating WHERE user_id = :user_id AND movie_id = :movie_id"
+            ),
+            {"user_id": current_user.id, "movie_id": movie_id},
+        ).fetchone()
+
         if old_rating:
             # Changes old review instead of making a new one
-            old_rating.rating = rating_form.rating.data
-        else:
-            rating = Rating(
-                user_id=current_user.id,
-                movie_id=movie_id,
-                rating=rating_form.rating.data,
+            db.session.execute(
+                text(
+                    "UPDATE rating SET rating = :rating WHERE user_id = :user_id AND movie_id = :movie_id"
+                ),
+                {
+                    "rating": rating_form.rating.data,
+                    "user_id": current_user.id,
+                    "movie_id": movie_id,
+                },
             )
-            db.session.add(rating)
+        else:
+            db.session.execute(
+                text(
+                    "INSERT INTO rating (user_id, movie_id, rating) VALUES (:user_id, :movie_id, :rating)"
+                ),
+                {
+                    "user_id": current_user.id,
+                    "movie_id": movie_id,
+                    "rating": rating_form.rating.data,
+                },
+            )
+
+            on_watchlist = db.session.execute(
+                text(
+                    "SELECT * FROM watchlist WHERE user_id = :user_id AND movie_id = :movie_id"
+                ),
+                {"user_id": current_user.id, "movie_id": movie_id},
+            )
 
             # Add to watchlist if it's not already on the list
-            if not Watchlist.query.filter_by(
-                user_id=current_user.id, movie_id=movie_id
-            ).first():
-                entry = Watchlist(user_id=current_user.id, movie_id=movie_id)
-                db.session.add(entry)
+            if not on_watchlist:
+                db.session.execute(
+                    "INSERT INTO watchlist (user_id, movie_id) VALUES (:user_id, :movie_id)",
+                    {"user_id": current_user.id, "movie_id": movie_id},
+                )
 
         db.session.commit()
 
