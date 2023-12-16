@@ -339,7 +339,9 @@ def signup():
         ).decode("utf-8")
         # Add user to DB
         db.session.execute(
-            text("INSERT INTO users (username, password) VALUES (:username, :password)"),
+            text(
+                "INSERT INTO users (username, password) VALUES (:username, :password)"
+            ),
             {"username": signup_form.username.data, "password": hashed_password},
         )
         db.session.commit()
@@ -354,6 +356,7 @@ def login():
     """Handles logic related to logging users in"""
     login_form = LoginForm()
     if login_form.validate_on_submit():
+        # Uses ORM for login_user compatibility
         user = Users.query.filter((Users.username == login_form.username.data)).first()
 
         # Check for wrong login information
@@ -399,13 +402,17 @@ def add_movie():
 
     add_movie_form = AddMovieForm()
     if add_movie_form.validate_on_submit():
-        movie = Movie(
-            name=add_movie_form.name.data.capitalize(),
-            year=add_movie_form.year.data,
-            description=add_movie_form.description.data,
-            genre=add_movie_form.genre.data,
+        db.session.execute(
+            text(
+                "INSERT INTO movie (name, year, description, genre) VALUES (:name, :year, :description, :genre)"
+            ),
+            {
+                "name": add_movie_form.name.data.capitalize(),
+                "year": add_movie_form.year.data,
+                "description": add_movie_form.description.data,
+                "genre": add_movie_form.genre.data,
+            },
         )
-        db.session.add(movie)
         db.session.commit()
         flash(f"{add_movie_form.name.data} added to the database.")
         return redirect(url_for("views.add_movie"))
