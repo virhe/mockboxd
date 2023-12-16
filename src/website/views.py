@@ -133,6 +133,9 @@ def profile(user_id):
         .all()
     )
 
+    follower_count = db.session.execute(text("SELECT count(*) FROM follower WHERE followed_id = :user_id"), {"user_id": user_id}).scalar()
+    following_count = db.session.execute(text("SELECT count(*) FROM follower WHERE follower_id = :user_id"), {"user_id": user_id}).scalar()
+
     return render_template(
         "profile.html",
         title="Profile",
@@ -141,7 +144,11 @@ def profile(user_id):
         follow_form=follow_form,
         unfollow_form=unfollow_form,
         following=already_following,
+        follower_count=follower_count,
+        following_count=following_count
     )
+
+
 
 
 @views.route("/follow/<int:user_id>", methods=["GET", "POST"])
