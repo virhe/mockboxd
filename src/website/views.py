@@ -206,13 +206,15 @@ def unfollow_user(user_id):
 def movie_info(movie_id):
     """Handles logic related to each movie's info page"""
     movie = Movie.query.get_or_404(movie_id)
-    sql = text("""
+    sql = text(
+        """
     SELECT comment.*, users.username, users.id
     FROM comment
     JOIN users ON comment.user_id = users.id
     WHERE comment.movie_id = :movie_id
     ORDER BY comment.date_added DESC
-    """)
+    """
+    )
 
     comments = db.session.execute(sql, {"movie_id": movie_id}).fetchall()
 
@@ -223,12 +225,13 @@ def movie_info(movie_id):
 
     # Calculates average rating for the movie rounded to two decimal places
     try:
-        rating_avg = round(
-            db.session.query(func.avg(Rating.rating))
-            .filter(Rating.movie_id == movie_id)
-            .scalar(),
-            2,
-        )
+        rating = db.session.execute(
+            text("SELECT AVG(rating) FROM rating WHERE movie_id = :movie_id"),
+            {"movie_id": movie_id},
+        ).fetchone()
+
+        rating_avg = round(rating[0], 2)
+
     except TypeError:
         rating_avg = "No ratings in database"
 
